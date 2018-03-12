@@ -15,7 +15,7 @@
 #define UPDATE_CONN_PARAM 0 // Can be set to 1 only when no low power mode is used
 #define ADV_INTERVAL_MIN_MS  1000
 #define ADV_INTERVAL_MAX_MS  1200
-#define SENSOR_EMULATION
+//#define SENSOR_EMULATION
 
 /*******************************************************************************
 *                                     DEBUG
@@ -52,13 +52,14 @@ private:
     //stackInit
     //sensorDeviceInit
     uint8_t Sensor_DeviceInit(void);
-    //Sensor_DeviceInit
-    #define SENSOR_TIMER 1
-    static uint16_t acceleration_update_rate;
-    static uint8_t sensorTimer_expired;
+    //appTick
+    uint8_t request_free_fall_notify;
+
+
 
 
 public:
+    //static Serial *serialport;
     Blue1(Serial *, DigitalOut *, DigitalOut *, DigitalOut *, SPI *);
     ~Blue1();
     // board
@@ -73,9 +74,20 @@ public:
     //stackInit
     void stackInit(void);
     //sensorDeviceInit
+    #define SENSOR_TIMER 1
+    static uint16_t acceleration_update_rate;
+    static uint8_t sensorTimer_expired;
     void sensorDeviceInit(void);
     //setDeviceConnectable
     void setDeviceConnectable(void);
+    //BlueNRG-1 Stack Callbacks: connection handlers
+    static uint8_t set_connectable;
+    static int connected;
+    //btleStackTick
+    void btleStackTick(void);
+    //appTick
+    //uint8_t request_free_fall_notify;
+    void appTick(void);
 
 
 

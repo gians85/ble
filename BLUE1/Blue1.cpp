@@ -26,9 +26,13 @@ uint8_t Services_Max_Attribute_Records[NUMBER_OF_APPLICATION_SERVICES] = {MAX_NU
 /******************************************************************************
 * Static members definitions
 ******************************************************************************/
+//Serial *Blue1::serialport = NULL;
 //Sensor_DeviceInit
 uint16_t Blue1::acceleration_update_rate = 200;
 uint8_t  Blue1::sensorTimer_expired = FALSE;
+//BlueNRG-1 Stack Callbacks: connection handlers
+int      Blue1::connected = FALSE;
+uint8_t  Blue1::set_connectable = 1;
 
 /******************************************************************************
 * Function Name  : Blue1
@@ -43,6 +47,8 @@ Blue1::Blue1(Serial *serialPtr, DigitalOut *out1Ptr, DigitalOut *out2Ptr, Digita
     led2 = out2Ptr;
     led3 = out3Ptr;
     spi  = spiPtr;
+    //apptick
+    request_free_fall_notify = FALSE;
 }
 
 /******************************************************************************
@@ -265,12 +271,10 @@ uint8_t Blue1::Sensor_DeviceInit(){
     PRINTF("BLE Stack Initialized with SUCCESS\r\n");
 
     /* Add services and Characteristics */
-/*
+
     #ifndef SENSOR_EMULATION // User Real sensors /
-    #warning SENSOR_EMULATION
-    Init_Accelerometer();
-    Init_Pressure_Temperature_Sensor();
-    #endif
+    Blue1::configIMU();
+
     // Add ACC service and Characteristics
     ret = Add_Acc_Service();
     if(ret == BLE_STATUS_SUCCESS) {
@@ -279,7 +283,7 @@ uint8_t Blue1::Sensor_DeviceInit(){
         PRINTF("Error while adding Acceleration service: 0x%02x\r\n", ret);
         return ret;
     }
-    // Add Environmental Sensor Service
+/*    // Add Environmental Sensor Service
     ret = Add_Environmental_Sensor_Service();
     if(ret == BLE_STATUS_SUCCESS) {
         PRINTF("Environmental service added successfully.\r\n");
@@ -304,6 +308,8 @@ uint8_t Blue1::Sensor_DeviceInit(){
     }
 
     */
+
+    #endif
 
     return BLE_STATUS_SUCCESS;
 }
@@ -339,7 +345,47 @@ void Blue1::setDeviceConnectable(void){
         PRINTF("aci_gap_set_discoverable() --> SUCCESS\r\n");
 }
 
+/******************************************************************************
+ * Function Name  : btleStackTick.
+ * Description    : Call BTLE_StackTick();
+ * Input          : None.
+ * Output         : None.
+ * Return         : None.
+ *****************************************************************************/
+void Blue1::btleStackTick(void){
+    BTLE_StackTick();
+}
 
+/******************************************************************************
+ * Function Name  : appTick.
+ * Description    : Sensor Demo state machine.
+ * Input          : None.
+ * Output         : None.
+ * Return         : None.
+ *****************************************************************************/
+void Blue1::appTick(void){
+    /* Make the device discoverable */
+    if(set_connectable) {
+        Blue1::setDeviceConnectable();
+        set_connectable = FALSE;
+    }
+
+    #if UPDATE_CONN_PARAM
+    /* Connection parameter update request */
+    if(connected && !l2cap_request_sent && Timer_Expired(&l2cap_req_timer)){
+        ret = aci_l2cap_connection_parameter_update_req(connection_handle, 9, 20, 0, 600); //24, 24
+        l2cap_request_sent = TRUE;
+    }
+    #endif
+
+    /*Update sensor value */
+
+    /* Free fall notification */
+    if(request_free_fall_notify == TRUE) {
+        request_free_fall_notify = FALSE;
+        Free_Fall_Notify();
+    }
+}
 
 
 /******************************************************************************/
@@ -354,4 +400,125 @@ extern "C" {
     /*void SysTick_Handler(void){
         SysCount_Handler();
     }*/
+}
+
+
+
+/* ***************** BlueNRG-1 Stack Callbacks ********************************/
+uint16_t connection_handle = 0;
+/*******************************************************************************
+* Function Name  : hci_le_connection_complete_event.
+* Description    : This event indicates that a new connection has been created.
+* Input          : See file bluenrg1_events.h
+* Output         : See file bluenrg1_events.h
+* Return         : See file bluenrg1_events.h
+*******************************************************************************/
+void hci_le_connection_complete_event(uint8_t Status,
+                                      uint16_t Connection_Handle,
+                                      uint8_t Role,
+                                      uint8_t Peer_Address_Type,
+                                      uint8_t Peer_Address[6],
+                                      uint16_t Conn_Interval,
+                                      uint16_t Conn_Latency,
+                                      uint16_t Supervision_Timeout,
+                                      uint8_t Master_Clock_Accuracy)
+{
+    PRINTF("hci_le_connection_complete_event()\r\n");
+    Blue1::connected = TRUE;
+    connection_handle = Connection_Handle;
+
+#if UPDATE_CONN_PARAM
+    l2cap_request_sent = FALSE;
+    Timer_Set(&l2cap_req_timer, CLOCK_SECOND*2);
+#endif
+
+}/* end hci_le_connection_complete_event() */
+
+/*******************************************************************************
+* Function Name  : hci_disconnection_complete_event.
+* Description    : This event occurs when a connection is terminated.
+* Input          : See file bluenrg1_events.h
+* Output         : See file bluenrg1_events.h
+* Return         : See file bluenrg1_events.h
+*******************************************************************************/
+void hci_disconnection_complete_event(uint8_t Status,
+                                      uint16_t Connection_Handle,
+                                      uint8_t Reason)
+{
+    PRINTF("hci_disconnection_complete_event()\n\r");
+    Blue1::connected = FALSE;
+    /* Make the device connectable again. */
+    Blue1::set_connectable = TRUE;
+    connection_handle =0;
+
+    //led1=1;//SdkEvalLedOn(LED1);//activity led
+#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
+    OTA_terminate_connection();
+#endif
+}/* end hci_disconnection_complete_event() */
+
+
+/*******************************************************************************
+* Function Name  : aci_gatt_read_permit_req_event.
+* Description    : This event is given when a read request is received
+*                  by the server from the client.
+* Input          : See file bluenrg1_events.h
+* Output         : See file bluenrg1_events.h
+* Return         : See file bluenrg1_events.h
+*******************************************************************************/
+void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
+                                    uint16_t Attribute_Handle,
+                                    uint16_t Offset)
+{
+    Read_Request_CB(Attribute_Handle);
+}
+
+/*******************************************************************************
+* Function Name  : HAL_VTimerTimeoutCallback.
+* Description    : This function will be called on the expiry of
+*                  a one-shot virtual timer.
+* Input          : See file bluenrg1_stack.h
+* Output         : See file bluenrg1_stack.h
+* Return         : See file bluenrg1_stack.h
+*******************************************************************************/
+void HAL_VTimerTimeoutCallback(uint8_t timerNum){
+    if (timerNum == SENSOR_TIMER) {
+        Blue1::sensorTimer_expired = TRUE;
+    }
+}
+
+/*******************************************************************************
+* Function Name  : aci_gatt_attribute_modified_event.
+* Description    : This event occurs when an attribute is modified.
+* Input          : See file bluenrg1_events.h
+* Output         : See file bluenrg1_events.h
+* Return         : See file bluenrg1_events.h
+*******************************************************************************/
+void aci_gatt_attribute_modified_event(uint16_t Connection_Handle,
+                                       uint16_t Attr_Handle,
+                                       uint16_t Offset,
+                                       uint16_t Attr_Data_Length,
+                                       uint8_t Attr_Data[])
+{
+#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
+    OTA_Write_Request_CB(Connection_Handle, Attr_Handle, Attr_Data_Length, Attr_Data);
+#endif /* ST_OTA_FIRMWARE_UPGRADE_SUPPORT */
+}
+
+/*******************************************************************************
+* Function Name  : aci_hal_end_of_radio_activity_event.
+* Description    :
+* Input          : See file bluenrg1_events.h
+* Output         : See file bluenrg1_events.h
+* Return         : See file bluenrg1_events.h
+*******************************************************************************/
+void aci_hal_end_of_radio_activity_event(uint8_t Last_State,
+                                         uint8_t Next_State,
+                                         uint32_t Next_State_SysTime)
+{
+#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
+    if (Next_State == 0x02) /* 0x02: Connection event slave */{
+        OTA_Radio_Activity(Next_State_SysTime);
+    }
+#endif
 }

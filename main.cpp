@@ -18,19 +18,36 @@ Blue1 blue1(&serialport, &led1, &led2, &led3, &spi);
 int main() {
     /* board init */
     blue1.boardInit();
+    blue1.printSensor();
 
-    /* imu init
-    blue1.configIMU();*/
+    /* imu init */
+    // blue1.configIMU(); // lo sto spostando in Blue1::Sensor_DeviceInit()
 
-    /* BlueNRG-1 stack init
-    blue1.stackInit();*/
+    /* BlueNRG-1 stack init */
+    blue1.stackInit();
 
-    /* Device Init
-    blue1.sensorDeviceInit();*/
+    /* Device Init */
+    blue1.sensorDeviceInit();
 
     /* Device Connectable
     blue1.setDeviceConnectable();*/
 
-    blue1.printSensor();
+    while(1) {
+        /* BLE Stack Tick */
+        blue1.btleStackTick();
+
+        /* Application Tick */
+        blue1.appTick();
+
+        /* Power Save management */
+        sleep();
+
+    }
 
 }
+
+
+
+
+
+
