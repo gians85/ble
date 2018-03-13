@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define SENSOR_EMULATION
+//#define SENSOR_EMULATION
 #include <stdio.h>
 #include <string.h>
 #include "bluenrg1_api.h"
@@ -34,6 +34,7 @@ uint8_t  Blue1::sensorTimer_expired = FALSE;
 //BlueNRG-1 Stack Callbacks: connection handlers
 int      Blue1::connected = FALSE;
 uint8_t  Blue1::set_connectable = 1;
+SPI *Blue1::spi = NULL;
 
 /******************************************************************************
 * Function Name  : Blue1
@@ -167,7 +168,7 @@ void Blue1::readGyroIMU(int16_t * buf){
 * Input          : None.
 * Return         : None.
 ******************************************************************************/
-void Blue1::printSensor(){
+void Blue1::printIMU(){
     int16_t buf[3];
     float a = 0.000061, g = 0.004375;
     // acc_sensor
@@ -274,14 +275,16 @@ uint8_t Blue1::Sensor_DeviceInit(){
     /* Add services and Characteristics */
 
 #ifndef SENSOR_EMULATION // User Real sensors /
-    Init_Accelerometer();
-    Init_Pressure_Temperature_Sensor();
+    //Init_Accelerometer();
+    //Init_Pressure_Temperature_Sensor();
+    Blue1::configIMU();
+    Blue1::printIMU();
 #endif
 
     // Add ACC service and Characteristics
     ret = Add_Acc_Service();
     if(ret == BLE_STATUS_SUCCESS) {
-        PRINTF("Acceleration service added successfully.\n");
+        PRINTF("Acceleration service added successfully.\r\n");
     } else {
         PRINTF("Error while adding Acceleration service: 0x%02x\r\n", ret);
         return ret;
@@ -290,7 +293,7 @@ uint8_t Blue1::Sensor_DeviceInit(){
     // Add Environmental Sensor Service
     ret = Add_Environmental_Sensor_Service();
     if(ret == BLE_STATUS_SUCCESS) {
-        PRINTF("Environmental service added successfully.\n");
+        PRINTF("Environmental service added successfully.\r\n");
     } else {
         PRINTF("Error while adding Environmental service: 0x%04x\r\n", ret);
         return ret;
@@ -299,9 +302,9 @@ uint8_t Blue1::Sensor_DeviceInit(){
 #if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
     ret = OTA_Add_Btl_Service();
     if(ret == BLE_STATUS_SUCCESS)
-        PRINTF("OTA service added successfully.\n");
+        PRINTF("OTA service added successfully.\r\n");
     else
-        PRINTF("Error while adding OTA service.\n");
+        PRINTF("Error while adding OTA service.\r\n");
 #endif // ST_OTA_FIRMWARE_UPGRADE_SUPPORT
 
     // Start the Sensor Timer
@@ -365,6 +368,25 @@ void Blue1::btleStackTick(void){
  * Output         : None.
  * Return         : None.
  *****************************************************************************/
+IMU_6AXES_StatusTypeDef GetAccAxesRaw(AxesRaw_t * acceleration_data)
+{
+    IMU_6AXES_StatusTypeDef status = IMU_6AXES_OK;
+    int16_t buf[3];
+#ifdef SENSOR_EMULATION
+    acceleration_data->AXIS_X = ((uint64_t)rand()) % X_OFFSET;
+    acceleration_data->AXIS_Y = ((uint64_t)rand()) % Y_OFFSET;
+    acceleration_data->AXIS_Z = ((uint64_t)rand()) % Z_OFFSET;
+#else
+    //status = Imu6AxesDrv->Get_X_Axes((int32_t *)acceleration_data);
+    Blue1::readAccIMU(buf);
+    acceleration_data->AXIS_X = (uint32_t)(buf[0]>>3);
+    acceleration_data->AXIS_Y = (uint32_t)(buf[1]>>3);
+    acceleration_data->AXIS_Z = (uint32_t)(buf[2]>>3);
+#endif
+    return status;
+}
+
+
 void Blue1::appTick(void){
     /* Make the device discoverable */
     if(set_connectable) {
@@ -397,7 +419,8 @@ void Blue1::appTick(void){
             }
 
             // Get free fall status
-            GetFreeFallStatus();
+            //GetFreeFallStatus();
+            request_free_fall_notify = TRUE;
         }
     }
 
@@ -487,6 +510,8 @@ void hci_disconnection_complete_event(uint8_t Status,
 * Output         : See file bluenrg1_events.h
 * Return         : See file bluenrg1_events.h
 *******************************************************************************/
+
+
 void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
                                     uint16_t Attribute_Handle,
                                     uint16_t Offset)

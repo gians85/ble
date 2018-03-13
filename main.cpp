@@ -18,7 +18,7 @@ Blue1 blue1(&serialport, &led1, &led2, &led3, &spi);
 int main() {
     /* board init */
     blue1.boardInit();
-    blue1.printSensor();
+    //blue1.printIMU();
 
     /* imu init */
     // blue1.configIMU(); // lo sto spostando in Blue1::Sensor_DeviceInit()
