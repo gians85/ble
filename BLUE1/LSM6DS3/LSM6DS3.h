@@ -31,4 +31,12 @@
 #define OUT_TEMP_H  0x21
 
 
+// FROM BLUENRG1 SDK
+typedef enum {
+    IMU_6AXES_OK = 0,
+    IMU_6AXES_ERROR = 1,
+    IMU_6AXES_TIMEOUT = 2,
+    IMU_6AXES_NOT_IMPLEMENTED = 3
+} IMU_6AXES_StatusTypeDef;
+
 #endif /* _LSM6DS3_H_ */

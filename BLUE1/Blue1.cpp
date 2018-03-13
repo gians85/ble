@@ -3,6 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define SENSOR_EMULATION
 #include <stdio.h>
 #include <string.h>
 #include "bluenrg1_api.h"
@@ -15,7 +16,7 @@ extern "C" {
 #include "clock.h"
 #include "BlueNRG1_sleep.h"
 #include "SensorDemo_config.h"
-#include "sensor.h"
+//#include "sensor.h"
 #include "gatt_db.h"
 #ifdef __cplusplus
 }
@@ -272,32 +273,37 @@ uint8_t Blue1::Sensor_DeviceInit(){
 
     /* Add services and Characteristics */
 
-    #ifndef SENSOR_EMULATION // User Real sensors /
-    Blue1::configIMU();
+#ifndef SENSOR_EMULATION // User Real sensors /
+    Init_Accelerometer();
+    Init_Pressure_Temperature_Sensor();
+#endif
 
     // Add ACC service and Characteristics
     ret = Add_Acc_Service();
     if(ret == BLE_STATUS_SUCCESS) {
-        PRINTF("Acceleration service added successfully.\r\n");
+        PRINTF("Acceleration service added successfully.\n");
     } else {
         PRINTF("Error while adding Acceleration service: 0x%02x\r\n", ret);
         return ret;
     }
-/*    // Add Environmental Sensor Service
+
+    // Add Environmental Sensor Service
     ret = Add_Environmental_Sensor_Service();
     if(ret == BLE_STATUS_SUCCESS) {
-        PRINTF("Environmental service added successfully.\r\n");
+        PRINTF("Environmental service added successfully.\n");
     } else {
         PRINTF("Error while adding Environmental service: 0x%04x\r\n", ret);
         return ret;
     }
-    #if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
+
+#if ST_OTA_FIRMWARE_UPGRADE_SUPPORT
     ret = OTA_Add_Btl_Service();
     if(ret == BLE_STATUS_SUCCESS)
-        PRINTF("OTA service added successfully.\r\n");
+        PRINTF("OTA service added successfully.\n");
     else
-    PRINTF("Error while adding OTA service.\r\n");
-    #endif // ST_OTA_FIRMWARE_UPGRADE_SUPPORT
+        PRINTF("Error while adding OTA service.\n");
+#endif // ST_OTA_FIRMWARE_UPGRADE_SUPPORT
+
     // Start the Sensor Timer
     ret = HAL_VTimerStart_ms(SENSOR_TIMER, acceleration_update_rate);
     if (ret != BLE_STATUS_SUCCESS) {
@@ -306,10 +312,6 @@ uint8_t Blue1::Sensor_DeviceInit(){
     } else {
         sensorTimer_expired = FALSE;
     }
-
-    */
-
-    #endif
 
     return BLE_STATUS_SUCCESS;
 }
@@ -379,6 +381,25 @@ void Blue1::appTick(void){
     #endif
 
     /*Update sensor value */
+    if (sensorTimer_expired) {
+        sensorTimer_expired = FALSE;
+        if (HAL_VTimerStart_ms(SENSOR_TIMER, acceleration_update_rate) != BLE_STATUS_SUCCESS)
+            sensorTimer_expired = TRUE;
+        if(connected) {
+            AxesRaw_t acc_data;
+
+            // Activity Led
+            *led1 = !*led1; //SdkEvalLedToggle(LED1);
+
+            // Get Acceleration data
+            if (GetAccAxesRaw(&acc_data) == IMU_6AXES_OK) {
+                Acc_Update(&acc_data);
+            }
+
+            // Get free fall status
+            GetFreeFallStatus();
+        }
+    }
 
     /* Free fall notification */
     if(request_free_fall_notify == TRUE) {

@@ -16,7 +16,7 @@
           
           
           
-        <Column0>318</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+        <Column0>213</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
       </Workspace>
       <Build>
         
@@ -25,16 +25,16 @@
         
       <ColumnWidth0>27</ColumnWidth0><ColumnWidth1>1387</ColumnWidth1><ColumnWidth2>370</ColumnWidth2><ColumnWidth3>92</ColumnWidth3></Build>
       <Find-in-Files>
-        <ColumnWidth0>569</ColumnWidth0>
-        <ColumnWidth1>94</ColumnWidth1>
-        <ColumnWidth2>854</ColumnWidth2>
-        <ColumnWidth3>379</ColumnWidth3>
-      </Find-in-Files>
-    <TerminalIO/></Static>
+        
+        
+        
+        
+      <ColumnWidth0>569</ColumnWidth0><ColumnWidth1>94</ColumnWidth1><ColumnWidth2>854</ColumnWidth2><ColumnWidth3>379</ColumnWidth3></Find-in-Files>
+    <TerminalIO/><Select-Ambiguous-Definitions><ColumnWidth0>547</ColumnWidth0><ColumnWidth1>78</ColumnWidth1><ColumnWidth2>938</ColumnWidth2></Select-Ambiguous-Definitions></Static>
     <Windows>
       
       
-    <Wnd0>
+    <Wnd2>
         <Tabs>
           <Tab>
             <Identity>TabID-7727-10103</Identity>
@@ -42,11 +42,11 @@
             <Factory>Workspace</Factory>
             <Session>
               
-            <NodeDict><ExpandedNode>gian-ble</ExpandedNode><ExpandedNode>gian-ble/BLUE1</ExpandedNode><ExpandedNode>gian-ble/gian-ble</ExpandedNode><ExpandedNode>gian-ble/mbed-os</ExpandedNode></NodeDict></Session>
+            <NodeDict><ExpandedNode>gian-ble</ExpandedNode><ExpandedNode>gian-ble/Output</ExpandedNode><ExpandedNode>gian-ble/Output/name.out</ExpandedNode><ExpandedNode>gian-ble/Output/name.out/Output</ExpandedNode><ExpandedNode>gian-ble/gian-ble</ExpandedNode></NodeDict></Session>
           </Tab>
         </Tabs>
         
-      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+      <SelectedTab>0</SelectedTab></Wnd2><Wnd3>
         <Tabs>
           <Tab>
             <Identity>TabID-18476-10106</Identity>
@@ -66,22 +66,22 @@
             <Factory>Find-in-Files</Factory>
             <Session/>
           </Tab>
-        </Tabs>
+        <Tab><Identity>TabID-31482-21012</Identity><TabName>Ambiguous Definitions</TabName><Factory>Select-Ambiguous-Definitions</Factory><Session/></Tab></Tabs>
         
-      <SelectedTab>1</SelectedTab></Wnd1></Windows>
+      <SelectedTab>1</SelectedTab></Wnd3></Windows>
     <Editor>
       
       
       
       
-    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>18</YPos2><SelStart2>985</SelStart2><SelEnd2>985</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\BLUE1\Blue1.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>22</YPos2><SelStart2>1340</SelStart2><SelEnd2>1340</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\BLUE1\Blue1.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>402</YPos2><SelStart2>18659</SelStart2><SelEnd2>18659</SelEnd2></Tab><ActiveTab>2</ActiveTab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\main.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>18</SelStart2><SelEnd2>18</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\BLUE1\Blue1.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>279</SelStart2><SelEnd2>279</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\BLUE1\Blue1.cpp</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>88</SelStart2><SelEnd2>88</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\BLUE1\SensorDemo\gatt_db.c</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>78</YPos2><SelStart2>4011</SelStart2><SelEnd2>4011</SelEnd2></Tab><ActiveTab>3</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\BLUE1\SensorDemo\gatt_db.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>410</SelStart2><SelEnd2>410</SelEnd2></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\BLUE1\LSM6DS3\LSM6DS3.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd><XPos2>0</XPos2><YPos2>0</YPos2><SelStart2>67</SelStart2><SelEnd2>67</SelEnd2></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
     <Positions>
       
       
       
       
       
-    <Top><Row0><Sizes><Toolbar-02E60358><key>iaridepm.enu1</key></Toolbar-02E60358></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>702</Bottom><Right>413</Right><x>-2</x><y>-2</y><xscreen>169</xscreen><yscreen>163</yscreen><sizeHorzCX>106557</sizeHorzCX><sizeHorzCY>169439</sizeHorzCY><sizeVertCX>261665</sizeVertCX><sizeVertCY>731809</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>212</Bottom><Right>793</Right><x>-2</x><y>-2</y><xscreen>1590</xscreen><yscreen>214</yscreen><sizeHorzCX>1002522</sizeHorzCX><sizeHorzCY>222453</sizeHorzCY><sizeVertCX>106557</sizeVertCX><sizeVertCY>169439</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+    <Top><Row0><Sizes><Toolbar-02CC0358><key>iaridepm.enu1</key></Toolbar-02CC0358></Sizes></Row0></Top><Left><Row0><Sizes><Wnd2><Rect><Top>-2</Top><Left>-2</Left><Bottom>685</Bottom><Right>308</Right><x>-2</x><y>-2</y><xscreen>126</xscreen><yscreen>146</yscreen><sizeHorzCX>65625</sizeHorzCX><sizeHorzCY>148980</sizeHorzCY><sizeVertCX>161458</sizeVertCX><sizeVertCY>701020</sizeVertCY></Rect></Wnd2></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>247</Bottom><Right>1922</Right><x>-2</x><y>-2</y><xscreen>1924</xscreen><yscreen>249</yscreen><sizeHorzCX>1002083</sizeHorzCX><sizeHorzCY>254082</sizeHorzCY><sizeVertCX>65625</sizeVertCX><sizeVertCY>148980</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
   </Desktop>
 </Workspace>
 

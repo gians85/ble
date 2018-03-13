@@ -15,7 +15,7 @@
 #define UPDATE_CONN_PARAM 0 // Can be set to 1 only when no low power mode is used
 #define ADV_INTERVAL_MIN_MS  1000
 #define ADV_INTERVAL_MAX_MS  1200
-//#define SENSOR_EMULATION
+
 
 /*******************************************************************************
 *                                     DEBUG
