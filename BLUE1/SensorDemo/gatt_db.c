@@ -28,7 +28,7 @@
 
 //#include "LPS25HB.h"
 //#include "lsm6ds3.h"
-//#define SENSOR_EMULATION
+#define SENSOR_EMULATION
 
 #ifndef DEBUG
 #define DEBUG 0
@@ -74,12 +74,12 @@ Char_Desc_Uuid_t char_desc_uuid;
 extern uint16_t connection_handle;
 extern BOOL sensor_board;
 #ifndef SENSOR_EMULATION
-//extern PRESSURE_DrvTypeDef* xLPS25HBDrv;
-//extern IMU_6AXES_DrvTypeDef *Imu6AxesDrv;
-//extern LSM6DS3_DrvExtTypeDef *Imu6AxesDrvExt;
+extern PRESSURE_DrvTypeDef* xLPS25HBDrv;
+extern IMU_6AXES_DrvTypeDef *Imu6AxesDrv;
+extern LSM6DS3_DrvExtTypeDef *Imu6AxesDrvExt;
 #endif
 
-/*IMU_6AXES_StatusTypeDef GetAccAxesRaw(AxesRaw_t * acceleration_data)
+IMU_6AXES_StatusTypeDef GetAccAxesRaw(AxesRaw_t * acceleration_data)
 {
     IMU_6AXES_StatusTypeDef status = IMU_6AXES_OK;
 
@@ -88,24 +88,24 @@ extern BOOL sensor_board;
     acceleration_data->AXIS_Y = ((uint64_t)rand()) % Y_OFFSET;
     acceleration_data->AXIS_Z = ((uint64_t)rand()) % Z_OFFSET;
 #else
-    //status = Imu6AxesDrv->Get_X_Axes((int32_t *)acceleration_data);
+    status = Imu6AxesDrv->Get_X_Axes((int32_t *)acceleration_data);
 #endif
     return status;
-}*/
+}
 
-/*void GetFreeFallStatus(void)
+void GetFreeFallStatus(void)
 {
 #ifndef SENSOR_EMULATION
     uint8_t free_fall_status;
 
-    // Set the IRQ flag
+    /* Set the IRQ flag */
     Imu6AxesDrvExt->Get_Status_Free_Fall_Detection(&free_fall_status);
     if (free_fall_status == 1)
     {
         request_free_fall_notify = TRUE;
     }
 #endif
-}*/
+}
 
 /*******************************************************************************
 * Function Name  : Add_Chat_Service
@@ -316,7 +316,6 @@ tBleStatus Add_Environmental_Sensor_Service(void)
     return BLE_STATUS_SUCCESS;
 #endif /* SENSOR_EMULATION */
 
-
 fail:
     PRINTF("Error while adding ENV_SENS service.\n");
     return BLE_STATUS_ERROR ;
@@ -405,10 +404,9 @@ void Read_Request_CB(uint16_t handle)
             Acc_Update(&acc_data);
         }
     }
-/*    else if(handle == tempCharHandle + 1)
+    else if(handle == tempCharHandle + 1)
     {
         float data;
-
 #ifdef SENSOR_EMULATION
         data = 27 + ((uint64_t)rand()*15)/RAND_MAX;
         Temp_Update((int16_t)(data * 10));
@@ -441,7 +439,6 @@ void Read_Request_CB(uint16_t handle)
         Humidity_Update(data);
     }
 #endif
-        */
     if(connection_handle !=0)
     {
         ret = aci_gatt_allow_read(connection_handle);

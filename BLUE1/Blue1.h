@@ -44,9 +44,9 @@ private:
     DigitalOut *led3;
     DigitalIn *but1;
     DigitalIn *but2;
-    static SPI *spi; // mosi, miso, sclk
+    SPI *spi; // mosi, miso, sclk
     //imu
-    static char IMU_register(char, char);
+    char IMU_register(char, char);
     //blue
     uint8_t ret;
     //stackInit
@@ -67,9 +67,9 @@ public:
     //imu
     void configIMU(void);
     float readTempIMU(void);
-    static void readAccIMU(int16_t *);
+    void readAccIMU(int16_t *);
     void readGyroIMU(int16_t *);
-    void printIMU(void);
+    void printSensor(void);
     //blue
     //stackInit
     void stackInit(void);
