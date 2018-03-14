@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define SENSOR_EMULATION
+//#define SENSOR_EMULATION
 #include <stdio.h>
 #include <string.h>
 #include "bluenrg1_api.h"
@@ -16,13 +16,20 @@ extern "C" {
 #include "clock.h"
 #include "BlueNRG1_sleep.h"
 #include "SensorDemo_config.h"
-//#include "sensor.h"
+//#include "sensor.h" //eliminato
 #include "gatt_db.h"
 #ifdef __cplusplus
 }
 #endif
 
 uint8_t Services_Max_Attribute_Records[NUMBER_OF_APPLICATION_SERVICES] = {MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_1, MAX_NUMBER_ATTRIBUTES_RECORDS_SERVICE_2};
+
+struct sensorvalues{
+    int a;
+};
+
+
+
 
 /******************************************************************************
 * Static members definitions
@@ -274,8 +281,10 @@ uint8_t Blue1::Sensor_DeviceInit(){
     /* Add services and Characteristics */
 
 #ifndef SENSOR_EMULATION // User Real sensors /
-    Init_Accelerometer();
-    Init_Pressure_Temperature_Sensor();
+    //Init_Accelerometer();
+    //Init_Pressure_Temperature_Sensor();
+    Blue1::configIMU();
+    Blue1::printSensor();
 #endif
 
     // Add ACC service and Characteristics
@@ -365,6 +374,8 @@ void Blue1::btleStackTick(void){
  * Output         : None.
  * Return         : None.
  *****************************************************************************/
+int16_t buffer_ext[3];
+
 void Blue1::appTick(void){
     /* Make the device discoverable */
     if(set_connectable) {
@@ -391,11 +402,21 @@ void Blue1::appTick(void){
             // Activity Led
             *led1 = !*led1; //SdkEvalLedToggle(LED1);
 
+#ifndef SENSOR_EMULATION
+            int16_t buf[3];
+            Blue1::readAccIMU(buf);
+            acc_data.AXIS_X = buf[0]*0.061;
+            acc_data.AXIS_Y = buf[1]*0.061;
+            acc_data.AXIS_Z = buf[2]*0.061;
+#endif
             // Get Acceleration data
             if (GetAccAxesRaw(&acc_data) == IMU_6AXES_OK) {
                 Acc_Update(&acc_data);
             }
 
+#ifndef SENSOR_EMULATION
+            Temp_Update(Blue1::readTempIMU()*10);
+#endif
             // Get free fall status
             GetFreeFallStatus();
         }
@@ -491,7 +512,11 @@ void aci_gatt_read_permit_req_event(uint16_t Connection_Handle,
                                     uint16_t Attribute_Handle,
                                     uint16_t Offset)
 {
-    Read_Request_CB(Attribute_Handle);
+    AxesRaw_t acc_data;
+    acc_data.AXIS_X = 0;
+    acc_data.AXIS_Y = 0;
+    acc_data.AXIS_Z = 0;
+    Read_Request_CB(Attribute_Handle, acc_data);
 }
 
 /*******************************************************************************

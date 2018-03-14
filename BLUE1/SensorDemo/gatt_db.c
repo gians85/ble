@@ -24,11 +24,12 @@
 #include "gp_timer.h"
 #include "gatt_db.h"
 #include "osal.h"
-//#include "SDK_EVAL_Config.h"
+//#include "SDK_EVAL_Config.h"  //eliminato
 
-//#include "LPS25HB.h"
-//#include "lsm6ds3.h"
-#define SENSOR_EMULATION
+//#include "LPS25HB.h"  //eliminato
+//#include "lsm6ds3.h"  //eliminato
+
+//#define SENSOR_EMULATION
 
 #ifndef DEBUG
 #define DEBUG 0
@@ -74,27 +75,28 @@ Char_Desc_Uuid_t char_desc_uuid;
 extern uint16_t connection_handle;
 extern BOOL sensor_board;
 #ifndef SENSOR_EMULATION
-extern PRESSURE_DrvTypeDef* xLPS25HBDrv;
-extern IMU_6AXES_DrvTypeDef *Imu6AxesDrv;
-extern LSM6DS3_DrvExtTypeDef *Imu6AxesDrvExt;
+//extern PRESSURE_DrvTypeDef* xLPS25HBDrv;
+//extern IMU_6AXES_DrvTypeDef *Imu6AxesDrv;
+//extern LSM6DS3_DrvExtTypeDef *Imu6AxesDrvExt;
 #endif
 
 IMU_6AXES_StatusTypeDef GetAccAxesRaw(AxesRaw_t * acceleration_data)
 {
     IMU_6AXES_StatusTypeDef status = IMU_6AXES_OK;
 
-#ifdef SENSOR_EMULATION
+/*#ifdef SENSOR_EMULATION
     acceleration_data->AXIS_X = ((uint64_t)rand()) % X_OFFSET;
     acceleration_data->AXIS_Y = ((uint64_t)rand()) % Y_OFFSET;
     acceleration_data->AXIS_Z = ((uint64_t)rand()) % Z_OFFSET;
 #else
-    status = Imu6AxesDrv->Get_X_Axes((int32_t *)acceleration_data);
-#endif
+    //status = Imu6AxesDrv->Get_X_Axes((int32_t *)acceleration_data);
+#endif*/
     return status;
 }
 
 void GetFreeFallStatus(void)
 {
+#ifdef aaa
 #ifndef SENSOR_EMULATION
     uint8_t free_fall_status;
 
@@ -105,6 +107,7 @@ void GetFreeFallStatus(void)
         request_free_fall_notify = TRUE;
     }
 #endif
+#endif //aaa
 }
 
 /*******************************************************************************
@@ -392,10 +395,10 @@ tBleStatus Humidity_Update(uint16_t humidity)
 * Input          : Handle of the characteristic to update.
 * Return         : None.
 *******************************************************************************/
-void Read_Request_CB(uint16_t handle)
+void Read_Request_CB(uint16_t handle, AxesRaw_t acc_data)
 {
     tBleStatus ret;
-    AxesRaw_t acc_data;
+    //AxesRaw_t acc_data;
 
     if(handle == accCharHandle + 1)
     {
@@ -411,10 +414,10 @@ void Read_Request_CB(uint16_t handle)
         data = 27 + ((uint64_t)rand()*15)/RAND_MAX;
         Temp_Update((int16_t)(data * 10));
 #else
-        if (xLPS25HBDrv->GetTemperature(&data) == 0)
+        /*if (xLPS25HBDrv->GetTemperature(&data) == 0)
         {
             Temp_Update((int16_t)(data * 10));
-        }
+        }*/
 #endif
     }
     else if(handle == pressCharHandle + 1)
@@ -425,10 +428,10 @@ void Read_Request_CB(uint16_t handle)
         data = 1000 + ((uint64_t)rand()*1000)/RAND_MAX;
         Press_Update((int32_t)(data *100));
 #else
-        if (xLPS25HBDrv->GetPressure(&data) == 0)
+        /*if (xLPS25HBDrv->GetPressure(&data) == 0)
         {
             Press_Update((int32_t)(data *100));
-        }
+        }*/
 #endif
     }
 #ifdef SENSOR_EMULATION
@@ -447,5 +450,15 @@ void Read_Request_CB(uint16_t handle)
             //SdkEvalLedOn(LED3);
         }
     }
+}
+
+
+
+uint16_t getTempCharHandle(void){
+    return tempCharHandle;
+}
+
+uint16_t getAccCharHandle(void){
+    return accCharHandle;
 }
 

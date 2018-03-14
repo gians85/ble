@@ -32,7 +32,7 @@ IMU_6AXES_StatusTypeDef GetAccAxesRaw (AxesRaw_t * acceleration_data);
 void GetFreeFallStatus(void);
 
 tBleStatus Add_Acc_Service(void);
-void Read_Request_CB(uint16_t handle);
+void Read_Request_CB(uint16_t handle, AxesRaw_t acc_data);
 tBleStatus Free_Fall_Notify(void);
 tBleStatus Acc_Update(AxesRaw_t *data);
 
@@ -42,9 +42,8 @@ extern volatile uint8_t request_free_fall_notify;
 
 extern uint8_t Services_Max_Attribute_Records[];
 
-
-
-
+//rendo disponibile le seguenti funzioni
+tBleStatus Temp_Update(int16_t temp);
 
 
 #endif /* _GATT_DB_H_ */

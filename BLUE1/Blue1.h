@@ -56,8 +56,6 @@ private:
     uint8_t request_free_fall_notify;
 
 
-
-
 public:
     //static Serial *serialport;
     Blue1(Serial *, DigitalOut *, DigitalOut *, DigitalOut *, SPI *);
@@ -86,13 +84,7 @@ public:
     //btleStackTick
     void btleStackTick(void);
     //appTick
-    //uint8_t request_free_fall_notify;
     void appTick(void);
-
-
-
-
-
 
 
 }; // end class BLue1
